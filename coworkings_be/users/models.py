@@ -19,7 +19,6 @@ class CustomUser(AbstractUser):
     email = models.EmailField(_("email address"), unique=True)
     avatar = models.ImageField(blank=True, null=True, upload_to=IMAGE_UPLOAD_DIR)
     nick_name = models.CharField(max_length=30, blank=True, null=True, unique=True)
-    company_name = models.CharField(max_length=100, blank=True, null=True, unique=True)
     role = models.CharField(
         max_length=30, choices=UserRoles.choices, default=UserRoles.GUEST
     )
