@@ -4,9 +4,14 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from users.managers import CustomUserManager
-from users.user_roles import UserRoles
 
 IMAGE_UPLOAD_DIR = os.environ["IMAGE_UPLOAD_DIR"]
+
+
+class UserRoles(models.TextChoices):
+    GUEST = "guest"
+    OWNER = "owner"
+    ADMINISTRATOR = "administrator"
 
 
 class CustomUser(AbstractUser):
