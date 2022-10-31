@@ -15,6 +15,11 @@ class CoworkingStatus(models.IntegerChoices):
 
 
 class Coworking(models.Model, AuditMixin):
+    """
+    This model describes coworking
+    Simple User(Guest) can not create a coworking
+    """
+
     title = models.CharField(max_length=300)
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)

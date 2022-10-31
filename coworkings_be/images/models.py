@@ -7,6 +7,10 @@ from utils.mixins import AuditMixin
 
 
 class BaseImages(models.Model, AuditMixin):
+    """
+    Base model for describing uploaded to gallery images
+    """
+
     title = models.CharField(max_length=300)
     description = models.TextField(null=True, blank=True)
     altText = models.TextField(null=True, blank=True)
@@ -27,6 +31,10 @@ class BaseImages(models.Model, AuditMixin):
 
 
 class CoworkingPhoto(BaseImages):
+    """
+    model for uploaded images to Coworking gallery
+    """
+
     coworking = models.ForeignKey(Coworking, on_delete=models.CASCADE)
     image = models.ImageField(
         upload_to=COWORKING_IMAGES_UPLOAD_DIR, blank=True, null=True
