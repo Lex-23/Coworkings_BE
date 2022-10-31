@@ -1,11 +1,8 @@
-import os
-
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from users.models import CustomUser, UserRoles
 from utils.mixins import AuditMixin
-
-COWORKING_IMAGES_UPLOAD_DIR = os.environ["COWORKING_IMAGES_UPLOAD_DIR"]
 
 
 class CoworkingStatus(models.IntegerChoices):
@@ -28,7 +25,7 @@ class Coworking(models.Model, AuditMixin):
     opening_time = models.TimeField(null=True, blank=True)
     closing_time = models.TimeField(null=True, blank=True)
     avatar = models.ImageField(
-        upload_to=COWORKING_IMAGES_UPLOAD_DIR, blank=True, null=True
+        upload_to=settings.COWORKING_IMAGES_UPLOAD_DIR, blank=True, null=True
     )
     status = models.IntegerField(
         choices=CoworkingStatus.choices, default=CoworkingStatus.NOT_VERIFIED

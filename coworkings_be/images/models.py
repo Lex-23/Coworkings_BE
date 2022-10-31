@@ -1,6 +1,7 @@
 from uuid import uuid4
 
-from coworking.models import COWORKING_IMAGES_UPLOAD_DIR, Coworking
+from coworking.models import Coworking
+from django.conf import settings
 from django.db import models
 from django.utils.text import slugify
 from utils.mixins import AuditMixin
@@ -37,5 +38,5 @@ class CoworkingPhoto(BaseImages):
 
     coworking = models.ForeignKey(Coworking, on_delete=models.CASCADE)
     image = models.ImageField(
-        upload_to=COWORKING_IMAGES_UPLOAD_DIR, blank=True, null=True
+        upload_to=settings.COWORKING_IMAGES_UPLOAD_DIR, blank=True, null=True
     )

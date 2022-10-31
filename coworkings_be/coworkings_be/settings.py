@@ -136,3 +136,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+USER_IMAGE_UPLOAD_DIR = "uploads_images/"
+COWORKING_IMAGES_UPLOAD_DIR = "uploads_images/coworkings/"
