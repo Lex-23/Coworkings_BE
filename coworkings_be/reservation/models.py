@@ -17,4 +17,4 @@ class Reservation(models.Model, AuditMixin):
     total_price = PriceField()
 
     def __str__(self):
-        return f"{self.working_spaces} - " f"{self.user} - " f"{self.total_price}"
+        return f"{self.working_spaces} - {self.user} - {self.total_price}"
