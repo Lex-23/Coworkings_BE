@@ -29,7 +29,7 @@ class TypeWorkingSpace(models.Model):
         return f"{self.coworking}, {self.type}, {self.base_price}"
 
 
-class WorkingSpace(models.Model, AuditMixin):
+class WorkingSpace(AuditMixin, models.Model):
     type = models.ForeignKey(TypeWorkingSpace, on_delete=models.CASCADE)
     local_number = models.IntegerField(auto_created=True)
     coworking = models.ForeignKey(

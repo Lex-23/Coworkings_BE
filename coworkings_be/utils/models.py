@@ -5,7 +5,11 @@ from django.utils.text import slugify
 from utils.mixins import AuditMixin
 
 
-class BaseImages(models.Model, AuditMixin):
+class HashTag(AuditMixin, models.Model):
+    title = models.CharField(max_length=250, unique=True)
+
+
+class BaseImages(AuditMixin, models.Model):
     """
     Base model for describing uploaded to gallery images
     """
@@ -14,7 +18,7 @@ class BaseImages(models.Model, AuditMixin):
     description = models.TextField(null=True, blank=True)
     altText = models.TextField(null=True, blank=True)
     uniqueId = models.CharField(null=True, blank=True, max_length=100)
-    hashtags = models.CharField(null=True, blank=True, max_length=300)
+    hashtags = models.ManyToManyField(HashTag, blank=True)
     slug = models.SlugField(max_length=500, unique=True, blank=True, null=True)
 
     class Meta:

@@ -1,7 +1,6 @@
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.db import models
-from users.models import CustomUser, UserRoles
+from users.models import CustomUser
 from utils.mixins import AuditMixin
 from utils.models import BaseImages
 
@@ -12,7 +11,7 @@ class CoworkingStatus(models.IntegerChoices):
     TEMPORARILY_CLOSED = 3
 
 
-class Coworking(models.Model, AuditMixin):
+class Coworking(AuditMixin, models.Model):
     """
     This model describes coworking
     Simple User(Guest) can not create a coworking
@@ -34,11 +33,6 @@ class Coworking(models.Model, AuditMixin):
 
     def __str__(self):
         return self.title
-
-    def save(self, *args, **kwargs):
-        if self.owner.role == UserRoles.GUEST:
-            raise ValidationError("Owner can not be a Guest")
-        super(Coworking, self).save(*args, **kwargs)
 
 
 class CoworkingPhoto(BaseImages):

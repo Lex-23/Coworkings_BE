@@ -5,7 +5,7 @@ from utils.mixins import AuditMixin
 from working_spaces.models import WorkingSpace
 
 
-class Reservation(models.Model, AuditMixin):
+class Reservation(AuditMixin, models.Model):
     """
     model for reserve one place for specific time
     """

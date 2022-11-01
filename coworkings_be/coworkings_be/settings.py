@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "coworking",
     "working_spaces",
     "reservation",
+    "utils",
 ]
 
 MIDDLEWARE = [
