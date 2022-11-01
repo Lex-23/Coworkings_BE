@@ -1,7 +1,5 @@
 from uuid import uuid4
 
-from coworking.models import Coworking
-from django.conf import settings
 from django.db import models
 from django.utils.text import slugify
 from utils.mixins import AuditMixin
@@ -29,14 +27,3 @@ class BaseImages(models.Model, AuditMixin):
         if self.uniqueId is None:
             self.uniqueId = str(uuid4()).split("-")[4]
             self.slug = slugify(f"{self.title} {self.uniqueId}")
-
-
-class CoworkingPhoto(BaseImages):
-    """
-    model for uploaded images to Coworking gallery
-    """
-
-    coworking = models.ForeignKey(Coworking, on_delete=models.CASCADE)
-    image = models.ImageField(
-        upload_to=settings.COWORKING_IMAGES_UPLOAD_DIR, blank=True, null=True
-    )

@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from users.models import CustomUser, UserRoles
 from utils.mixins import AuditMixin
+from utils.models import BaseImages
 
 
 class CoworkingStatus(models.IntegerChoices):
@@ -38,3 +39,14 @@ class Coworking(models.Model, AuditMixin):
         if self.owner.role == UserRoles.GUEST:
             raise ValidationError("Owner can not be a Guest")
         super(Coworking, self).save(*args, **kwargs)
+
+
+class CoworkingPhoto(BaseImages):
+    """
+    model for uploaded images to Coworking gallery
+    """
+
+    coworking = models.ForeignKey(Coworking, on_delete=models.CASCADE)
+    image = models.ImageField(
+        upload_to=settings.COWORKING_IMAGES_UPLOAD_DIR, blank=True, null=True
+    )
