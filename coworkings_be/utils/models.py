@@ -8,6 +8,17 @@ from utils.mixins import AuditMixin
 class HashTag(AuditMixin, models.Model):
     title = models.CharField(max_length=250, unique=True)
 
+    class Meta:
+        abstract = False
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if self.title[0] != "#":
+            self.title = f"#{self.title}"
+        super().save(*args, **kwargs)
+
 
 class BaseImages(AuditMixin, models.Model):
     """
@@ -25,9 +36,10 @@ class BaseImages(AuditMixin, models.Model):
         abstract = True
 
     def __str__(self):
-        return f"{self.title}-{self.last_updated}"
+        return f"uniqueId: {self.uniqueId}, slug: {self.slug}"
 
     def save(self, *args, **kwargs):
         if self.uniqueId is None:
             self.uniqueId = str(uuid4()).split("-")[4]
             self.slug = slugify(f"{self.title} {self.uniqueId}")
+        super().save(*args, **kwargs)
