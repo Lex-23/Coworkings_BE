@@ -59,9 +59,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={
-                "abstract": False,
-            },
             bases=(utils.mixins.AuditMixin, models.Model),
         ),
     ]

@@ -16,9 +16,6 @@ class Reservation(AuditMixin, models.Model):
     end_time = models.DateTimeField()
     total_price = PriceField()
 
-    class Meta:
-        abstract = False
-
     def __str__(self):
         return f"{self.working_space} - {self.user} - {self.total_price}"
 

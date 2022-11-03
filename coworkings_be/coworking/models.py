@@ -31,9 +31,6 @@ class Coworking(AuditMixin, models.Model):
         choices=CoworkingStatus.choices, default=CoworkingStatus.NOT_VERIFIED
     )
 
-    class Meta:
-        abstract = False
-
     def __str__(self):
         return self.title
 

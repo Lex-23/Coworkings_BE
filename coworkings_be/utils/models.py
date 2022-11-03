@@ -3,21 +3,14 @@ from uuid import uuid4
 from django.db import models
 from django.utils.text import slugify
 from utils.mixins import AuditMixin
+from utils.validators import validate_hashtag
 
 
 class HashTag(AuditMixin, models.Model):
-    title = models.CharField(max_length=250, unique=True)
-
-    class Meta:
-        abstract = False
+    title = models.CharField(max_length=250, unique=True, validators=[validate_hashtag])
 
     def __str__(self):
         return self.title
-
-    def save(self, *args, **kwargs):
-        if self.title[0] != "#":
-            self.title = f"#{self.title}"
-        super().save(*args, **kwargs)
 
 
 class BaseImages(AuditMixin, models.Model):
