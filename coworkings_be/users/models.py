@@ -26,4 +26,4 @@ class CustomUser(AbstractUser):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.email
+        return f'{self.email} {self.nick_name if self.nick_name else ""}'

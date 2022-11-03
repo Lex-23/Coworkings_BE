@@ -59,9 +59,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={
-                "abstract": False,
-            },
             bases=(utils.mixins.AuditMixin, models.Model),
         ),
         migrations.CreateModel(
@@ -101,9 +98,6 @@ class Migration(migrations.Migration):
                 ),
                 ("hashtags", models.ManyToManyField(blank=True, to="utils.hashtag")),
             ],
-            options={
-                "abstract": False,
-            },
             bases=(utils.mixins.AuditMixin, models.Model),
         ),
     ]

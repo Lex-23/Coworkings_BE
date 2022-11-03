@@ -1,3 +1,5 @@
+import uuid
+
 from coworking.models import Coworking
 from django.db import models
 from utils.fields import PriceField
@@ -26,14 +28,17 @@ class TypeWorkingSpace(models.Model):
         unique_together = ("coworking", "type", "label")
 
     def __str__(self):
-        return f"{self.coworking}, {self.type}, {self.base_price}"
+        return f"{self.get_type_display()} ({self.label})"
 
 
 class WorkingSpace(AuditMixin, models.Model):
     type = models.ForeignKey(TypeWorkingSpace, on_delete=models.CASCADE)
-    local_number = models.IntegerField(auto_created=True)
+    local_number = models.IntegerField()
+    individual_number = models.UUIDField(
+        default=uuid.uuid4, editable=False, unique=True
+    )
     coworking = models.ForeignKey(
-        TypeWorkingSpace, on_delete=models.CASCADE, related_name="working_spaces"
+        Coworking, on_delete=models.CASCADE, related_name="working_spaces"
     )
 
     class Meta:
@@ -41,3 +46,7 @@ class WorkingSpace(AuditMixin, models.Model):
 
     def __str__(self):
         return f"{self.local_number}{self.type.label}"
+
+    @property
+    def base_price(self):
+        return self.type.base_price
