@@ -1,9 +1,16 @@
 from uuid import uuid4
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 from utils.mixins import AuditMixin
-from utils.validators import validate_hashtag
+
+
+def validate_hashtag(value: str):
+    if value[0] != "#":
+        raise ValidationError("hashtag must be start from '#' symbol")
+    elif value == "#":
+        raise ValidationError("hashtag must contain minimum 1 symbol after '#'")
 
 
 class HashTag(AuditMixin, models.Model):
