@@ -71,5 +71,4 @@ class CoworkingAdmin(admin.ModelAdmin):
         CoworkingPhotoInline,
         TypeWorkingSpaceInline,
         WorkingSpaceInline,
-        # ReservationInline
     ]
