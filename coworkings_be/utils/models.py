@@ -11,6 +11,10 @@ def validate_hashtag(value: str):
         raise ValidationError("hashtag must be start from '#' symbol")
     elif value == "#":
         raise ValidationError("hashtag must contain minimum 1 symbol after '#'")
+    elif not value[1:].isalnum():
+        raise ValidationError(
+            "hashtag must contain only alphanumerical symbols after '#'"
+        )
 
 
 class HashTag(AuditMixin, models.Model):
