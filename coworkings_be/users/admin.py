@@ -1,17 +1,35 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 from users.models import CustomUser
 
 
 @admin.register(CustomUser)
-class UserAdmin(admin.ModelAdmin):
-    fields = (
-        "email",
-        "role",
-        "first_name",
-        "last_name",
-        "nick_name",
-        "date_joined",
-        "is_active",
+class CustomUserAdmin(UserAdmin):
+    fieldsets = (
+        (None, {"fields": ("role", "email", "password")}),
+        ("Personal info", {"fields": ("first_name", "last_name", "nick_name")}),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                ),
+            },
+        ),
+        ("Important dates", {"fields": ("last_login", "date_joined")}),
+    )
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("email", "role", "password1", "password2"),
+            },
+        ),
     )
     search_fields = ("email", "nick_name")
     list_filter = ("role", "date_joined")
