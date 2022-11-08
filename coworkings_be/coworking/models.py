@@ -17,7 +17,7 @@ class Coworking(AuditMixin, models.Model):
     Simple User(Guest) can not create a coworking
     """
 
-    title = models.CharField(max_length=300, unique=True)
+    title = models.CharField(max_length=300)
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     city = models.CharField(max_length=50)
