@@ -31,8 +31,15 @@ class Coworking(AuditMixin, models.Model):
         choices=CoworkingStatus.choices, default=CoworkingStatus.NOT_VERIFIED
     )
 
+    class Meta:
+        unique_together = ("title", "city")
+
     def __str__(self):
         return self.title
+
+    @property
+    def photos(self):
+        return self.coworking_photo.all()
 
 
 class CoworkingPhoto(BaseImages):
@@ -40,7 +47,7 @@ class CoworkingPhoto(BaseImages):
     model for uploaded images to Coworking gallery
     """
 
-    coworking = models.ForeignKey(Coworking, on_delete=models.CASCADE)
-    image = models.ImageField(
-        upload_to=settings.COWORKING_IMAGES_UPLOAD_DIR, blank=True, null=True
+    coworking = models.ForeignKey(
+        Coworking, on_delete=models.CASCADE, related_name="coworking_photo"
     )
+    image = models.ImageField(upload_to=settings.COWORKING_IMAGES_UPLOAD_DIR)
