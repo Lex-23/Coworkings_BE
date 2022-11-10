@@ -6,7 +6,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from utils.permissions import IsOwnerOrAdministratorRoleOrReadOnly
-from utils.validators import validate_is_owner
+from utils.validators import validate_request_to_coworking
 
 
 class CoworkingView(APIView):
@@ -22,7 +22,7 @@ class CoworkingView(APIView):
 
     def patch(self, request, pk, format=None):
         coworking = self.get_object(pk)
-        validate_is_owner(request, coworking.owner)
+        validate_request_to_coworking(request, coworking.owner)
         serializer = CoworkingSerializer(coworking, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -31,7 +31,7 @@ class CoworkingView(APIView):
 
     def delete(self, request, pk, format=None):
         coworking = self.get_object(pk)
-        validate_is_owner(request, coworking.owner)
+        validate_request_to_coworking(request, coworking.owner)
         coworking.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -41,17 +41,22 @@ class CoworkingListView(APIView, LimitOffsetPagination):
     permission_classes = (IsOwnerOrAdministratorRoleOrReadOnly,)
 
     def get(self, request, format=None):
-        coworkings = Coworking.objects.all()
+        coworkings = (
+            Coworking.objects.select_related("owner")
+            .prefetch_related("coworking_photo")
+            .all()
+        )
         results = self.paginate_queryset(coworkings, request, view=self)
         serializer = CoworkingSerializer(results, many=True)
         return self.get_paginated_response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = CoworkingSerializer(data=request.data, partial=True)
+        serializer = CoworkingSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        owner = serializer.validated_data.get("owner", request.user)
-        Coworking.objects.create(
+        owner = serializer.validated_data.pop("owner", request.user)
+        new_coworking = Coworking.objects.create(
             owner=owner,
             **serializer.validated_data,
         )
+        serializer = CoworkingSerializer(new_coworking)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
