@@ -16,8 +16,6 @@ class IsOwnerOrAdministratorRoleOrReadOnly(permissions.BasePermission):
             raise NotAuthenticated(
                 "You must be authenticated in system for this operation"
             )
-        # elif request.auth["user_role"] == UserRoles.GUEST:
-        #     raise PermissionDenied()
         elif request.auth["user_role"] == UserRoles.GUEST:
             raise PermissionDenied()
         else:
