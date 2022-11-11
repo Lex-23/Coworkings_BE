@@ -8,12 +8,12 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
 from users.models import UserRoles
 from users.serializers import CustomTokenObtainPairSerializer
-from users.tests.factory import TestUsersMixin, UserFactory
+from users.tests.factory import UserFactory
 
 User = get_user_model()
 
 
-class CoworkingListTestCase(TestCase, TestUsersMixin):
+class CoworkingListTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.coworking_list = CoworkingFactory.create_batch(
@@ -27,26 +27,18 @@ class CoworkingListTestCase(TestCase, TestUsersMixin):
         data = self.coworking_list
         self.assertEqual(200, response.status_code)
         self.assertEqual(len(data), response.json()["count"])
-        for n in range(len(data)):
-            self.assertEqual(data[n].id, response.json()["results"][n]["id"])
-            self.assertEqual(data[n].owner.id, response.json()["results"][n]["owner"])
-            self.assertEqual(
-                list(data[n].photos), response.json()["results"][n]["photos"]
-            )
-            self.assertEqual(data[n].title, response.json()["results"][n]["title"])
-            self.assertEqual(
-                data[n].description, response.json()["results"][n]["description"]
-            )
-            self.assertEqual(data[n].city, response.json()["results"][n]["city"])
-            self.assertEqual(data[n].address, response.json()["results"][n]["address"])
-            self.assertEqual(
-                data[n].opening_time, response.json()["results"][n]["opening_time"]
-            )
-            self.assertEqual(
-                data[n].closing_time, response.json()["results"][n]["closing_time"]
-            )
-            self.assertEqual(data[n].avatar, response.json()["results"][n]["avatar"])
-            self.assertEqual(data[n].status, response.json()["results"][n]["status"])
+        for expected_data, actual_data in zip(data, response.json()["results"]):
+            self.assertEqual(expected_data.id, actual_data["id"])
+            self.assertEqual(expected_data.owner.id, actual_data["owner"])
+            self.assertEqual(list(expected_data.photos), actual_data["photos"])
+            self.assertEqual(expected_data.title, actual_data["title"])
+            self.assertEqual(expected_data.description, actual_data["description"])
+            self.assertEqual(expected_data.city, actual_data["city"])
+            self.assertEqual(expected_data.address, actual_data["address"])
+            self.assertEqual(expected_data.opening_time, actual_data["opening_time"])
+            self.assertEqual(expected_data.closing_time, actual_data["closing_time"])
+            self.assertEqual(expected_data.avatar, actual_data["avatar"])
+            self.assertEqual(expected_data.status, actual_data["status"])
 
     def test_db_calls(self):
         with CaptureQueriesContext(connection) as query_context:
@@ -68,7 +60,7 @@ class CoworkingListTestCase(TestCase, TestUsersMixin):
 
     def test_create_coworking_auth_user_owner(self):
 
-        user_owner = self.test_users["owner"]
+        user_owner = UserFactory(role=UserRoles.OWNER)
 
         data = {"title": "New coworking", "city": "Minsk"}
         token = CustomTokenObtainPairSerializer.get_token(user_owner)
@@ -83,7 +75,7 @@ class CoworkingListTestCase(TestCase, TestUsersMixin):
 
     def test_create_coworking_auth_user_administrator(self):
 
-        user_administrator = self.test_users["administrator"]
+        user_administrator = UserFactory(role=UserRoles.ADMINISTRATOR)
 
         data = {
             "title": "New coworking1",
@@ -102,7 +94,7 @@ class CoworkingListTestCase(TestCase, TestUsersMixin):
 
     def test_create_coworking_auth_user_guest(self):
 
-        user_guest = self.test_users["guest"]
+        user_guest = UserFactory(role=UserRoles.GUEST)
 
         data = {
             "title": "New coworking1",
@@ -111,6 +103,7 @@ class CoworkingListTestCase(TestCase, TestUsersMixin):
         token = CustomTokenObtainPairSerializer.get_token(user_guest)
         self.client.force_authenticate(user=user_guest, token=token)
         response = self.client.post(self.url, data=data)
+
         self.assertEqual(403, response.status_code)
         self.assertEqual(
             {"detail": "You do not have permission to perform this action."},
@@ -118,7 +111,7 @@ class CoworkingListTestCase(TestCase, TestUsersMixin):
         )
 
 
-class CoworkingItemTestCase(TestCase, TestUsersMixin):
+class CoworkingItemTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.coworking_owner = User.objects.create_user(
@@ -130,6 +123,7 @@ class CoworkingItemTestCase(TestCase, TestUsersMixin):
 
     def test_get_coworking_not_auth_user(self):
         response = self.client.get(self.url)
+
         self.assertEqual(200, response.status_code)
         self.assertEqual(self.coworking.id, response.json()["id"])
         self.assertEqual(self.coworking.title, response.json()["title"])
@@ -152,12 +146,12 @@ class CoworkingItemTestCase(TestCase, TestUsersMixin):
         )
 
     def test_delete_and_patch_coworking_guest_user(self):
-        user_guest = self.test_users["guest"]
+        user_guest = UserFactory(role=UserRoles.GUEST)
         data = {"description": "description"}
         token = CustomTokenObtainPairSerializer.get_token(user_guest)
         self.client.force_authenticate(user=user_guest, token=token)
-
         response = self.client.patch(self.url, data)
+
         self.assertEqual(403, response.status_code)
         self.assertEqual(
             {"detail": "You do not have permission to perform this action."},
@@ -165,6 +159,7 @@ class CoworkingItemTestCase(TestCase, TestUsersMixin):
         )
 
         response1 = self.client.delete(self.url)
+
         self.assertEqual(403, response1.status_code)
         self.assertEqual(
             {"detail": "You do not have permission to perform this action."},
@@ -172,12 +167,12 @@ class CoworkingItemTestCase(TestCase, TestUsersMixin):
         )
 
     def test_delete_and_patch_coworking_another_owner_user(self):
-        user_owner = self.test_users["owner"]
+        user_owner = UserFactory(role=UserRoles.OWNER)
         data = {"description": "description"}
         token = CustomTokenObtainPairSerializer.get_token(user_owner)
         self.client.force_authenticate(user=user_owner, token=token)
-
         response = self.client.patch(self.url, data)
+
         self.assertEqual(403, response.status_code)
         self.assertEqual(
             {
@@ -187,6 +182,7 @@ class CoworkingItemTestCase(TestCase, TestUsersMixin):
         )
 
         response1 = self.client.delete(self.url)
+
         self.assertEqual(403, response1.status_code)
         self.assertEqual(
             {
@@ -199,8 +195,8 @@ class CoworkingItemTestCase(TestCase, TestUsersMixin):
         data = {"description": "description"}
         token = CustomTokenObtainPairSerializer.get_token(self.coworking_owner)
         self.client.force_authenticate(user=self.coworking_owner, token=token)
-
         response = self.client.patch(self.url, data)
+
         self.assertEqual(200, response.status_code)
         self.assertEqual(self.coworking.id, response.json()["id"])
         self.assertEqual(self.coworking.id, response.json()["id"])
@@ -209,17 +205,18 @@ class CoworkingItemTestCase(TestCase, TestUsersMixin):
         )
 
         response1 = self.client.delete(self.url)
+
         self.assertEqual(204, response1.status_code)
         with self.assertRaises(Coworking.DoesNotExist):
             Coworking.objects.get(id=self.coworking.id)
 
     def test_delete_and_patch_coworking_administrator_user(self):
-        user_administrator = self.test_users["administrator"]
+        user_administrator = UserFactory(role=UserRoles.ADMINISTRATOR)
         data = {"description": "description"}
         token = CustomTokenObtainPairSerializer.get_token(user_administrator)
         self.client.force_authenticate(user=user_administrator, token=token)
-
         response = self.client.patch(self.url, data)
+
         self.assertEqual(200, response.status_code)
         self.assertEqual(self.coworking.id, response.json()["id"])
         self.assertEqual(self.coworking.id, response.json()["id"])
@@ -228,6 +225,7 @@ class CoworkingItemTestCase(TestCase, TestUsersMixin):
         )
 
         response1 = self.client.delete(self.url)
+
         self.assertEqual(204, response1.status_code)
         with self.assertRaises(Coworking.DoesNotExist):
             Coworking.objects.get(id=self.coworking.id)
