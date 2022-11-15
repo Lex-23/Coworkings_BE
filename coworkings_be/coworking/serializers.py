@@ -3,9 +3,12 @@ from rest_framework import serializers
 from users.models import CustomUser
 
 
-class CoworkingPhotoSerializer(serializers.ModelSerializer):
+class CoworkingRelatedSerializer(serializers.ModelSerializer):
     queryset = Coworking.objects.all()
     coworking = serializers.PrimaryKeyRelatedField(queryset=queryset)
+
+
+class CoworkingPhotoSerializer(CoworkingRelatedSerializer):
     hashtags = serializers.StringRelatedField(many=True)
 
     class Meta:
