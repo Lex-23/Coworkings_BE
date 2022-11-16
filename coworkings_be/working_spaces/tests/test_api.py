@@ -103,7 +103,6 @@ class WorkingSpaceListTestCase(TestCase):
             response.json(),
         )
 
-    #
     def test_create_coworking_space_auth_user_administrator(self):
 
         user_administrator = UserFactory(role=UserRoles.ADMINISTRATOR)
