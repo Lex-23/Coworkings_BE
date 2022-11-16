@@ -1,6 +1,9 @@
 from coworking.models import Coworking
-from rest_framework import generics, mixins
-from rest_framework.generics import get_object_or_404
+from rest_framework.generics import (
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+    get_object_or_404,
+)
 from utils.permissions import IsOwnerOrAdministratorRoleOrReadOnly
 from utils.validators import validate_request_to_coworking
 from working_spaces.models import TypeWorkingSpace, WorkingSpace
@@ -10,13 +13,8 @@ from working_spaces.serializers import (
 )
 
 
-class BaseWorkingSpaceListView(
-    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
-):
+class BaseWorkingSpaceListView(ListCreateAPIView):
     permission_classes = (IsOwnerOrAdministratorRoleOrReadOnly,)
-
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         coworking = get_object_or_404(
@@ -28,32 +26,21 @@ class BaseWorkingSpaceListView(
         return self.create(request, *args, **kwargs)
 
 
-class BaseWorkingSpaceDetailView(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-):
+class BaseWorkingSpaceDetailView(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrAdministratorRoleOrReadOnly,)
 
-    def get_coworking(self, pk):
-        return get_object_or_404(queryset=Coworking.objects.all(), pk=pk)
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+    def validate_request(self, request):
+        coworking = Coworking.objects.get(id=self.get(request).data["coworking"])
+        validate_request_to_coworking(
+            request.user, request.auth["user_role"], coworking.owner
+        )
 
     def patch(self, request, *args, **kwargs):
-        coworking = Coworking.objects.get(id=self.get(request).data["coworking"])
-        validate_request_to_coworking(
-            request.user, request.auth["user_role"], coworking.owner
-        )
-        return self.update(request, *args, **kwargs)
+        self.validate_request(request)
+        return self.partial_update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
-        coworking = Coworking.objects.get(id=self.get(request).data["coworking"])
-        validate_request_to_coworking(
-            request.user, request.auth["user_role"], coworking.owner
-        )
+        self.validate_request(request)
         return self.destroy(request, *args, **kwargs)
 
 
