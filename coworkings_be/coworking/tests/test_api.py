@@ -45,6 +45,13 @@ class CoworkingListTestCase(TestCase):
             self.client.get(self.url)
         self.assertEqual(3, len(query_context))
 
+        self.coworking_list = CoworkingFactory.create_batch(
+            100, owner=UserFactory(role=UserRoles.OWNER)
+        )
+        with CaptureQueriesContext(connection) as query_context:
+            self.client.get(self.url)
+        self.assertEqual(3, len(query_context))
+
     def test_create_coworking_not_auth_user(self):
         data = {
             "title": "New coworking",
@@ -199,7 +206,6 @@ class CoworkingItemTestCase(TestCase):
 
         self.assertEqual(200, response.status_code)
         self.assertEqual(self.coworking.id, response.json()["id"])
-        self.assertEqual(self.coworking.id, response.json()["id"])
         self.assertEqual(
             Coworking.objects.get(id=self.coworking.id).description, data["description"]
         )
@@ -218,7 +224,6 @@ class CoworkingItemTestCase(TestCase):
         response = self.client.patch(self.url, data)
 
         self.assertEqual(200, response.status_code)
-        self.assertEqual(self.coworking.id, response.json()["id"])
         self.assertEqual(self.coworking.id, response.json()["id"])
         self.assertEqual(
             Coworking.objects.get(id=self.coworking.id).description, data["description"]
