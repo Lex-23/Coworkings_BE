@@ -5,8 +5,7 @@ from working_spaces.models import TypeWorkingSpace, WorkingSpace
 
 
 class TypeWorkingSpaceSerializer(CoworkingRelatedSerializer):
-    queryset = Coworking.objects.all()
-    coworking = serializers.PrimaryKeyRelatedField(queryset=queryset)
+    coworking = serializers.PrimaryKeyRelatedField(queryset=Coworking.objects.all())
     type = serializers.IntegerField()
 
     class Meta:
@@ -15,10 +14,8 @@ class TypeWorkingSpaceSerializer(CoworkingRelatedSerializer):
 
 
 class WorkingSpaceSerializer(CoworkingRelatedSerializer):
-    coworking_queryset = Coworking.objects.all()
-    coworking = serializers.PrimaryKeyRelatedField(queryset=coworking_queryset)
-    type_queryset = TypeWorkingSpace.objects.all()
-    type = serializers.PrimaryKeyRelatedField(queryset=type_queryset)
+    coworking = serializers.PrimaryKeyRelatedField(queryset=Coworking.objects.all())
+    type = serializers.PrimaryKeyRelatedField(queryset=TypeWorkingSpace.objects.all())
 
     class Meta:
         model = WorkingSpace

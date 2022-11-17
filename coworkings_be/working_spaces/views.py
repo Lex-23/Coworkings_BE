@@ -13,21 +13,25 @@ from working_spaces.serializers import (
 )
 
 
-class BaseWorkingSpaceListView(ListCreateAPIView):
+class WorkingSpaceListView(ListCreateAPIView):
     permission_classes = (IsOwnerOrAdministratorRoleOrReadOnly,)
+    queryset = WorkingSpace.objects.all()
+    serializer_class = WorkingSpaceSerializer
 
-    def post(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         coworking = get_object_or_404(
             queryset=Coworking.objects.all(), pk=request.data["coworking"]
         )
         validate_request_to_coworking(
             request.user, request.auth["user_role"], coworking.owner
         )
-        return self.create(request, *args, **kwargs)
+        return super().create(request, *args, **kwargs)
 
 
-class BaseWorkingSpaceDetailView(RetrieveUpdateDestroyAPIView):
+class WorkingSpaceDetailView(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrAdministratorRoleOrReadOnly,)
+    queryset = WorkingSpace.objects.all()
+    serializer_class = WorkingSpaceSerializer
 
     def validate_request(self, request):
         coworking = Coworking.objects.get(id=self.get(request).data["coworking"])
@@ -35,30 +39,45 @@ class BaseWorkingSpaceDetailView(RetrieveUpdateDestroyAPIView):
             request.user, request.auth["user_role"], coworking.owner
         )
 
-    def patch(self, request, *args, **kwargs):
+    def partial_update(self, request, *args, **kwargs):
         self.validate_request(request)
-        return self.partial_update(request, *args, **kwargs)
+        return super().partial_update(request, *args, **kwargs)
 
-    def delete(self, request, *args, **kwargs):
+    def destroy(self, request, *args, **kwargs):
         self.validate_request(request)
-        return self.destroy(request, *args, **kwargs)
+        return super().destroy(request, *args, **kwargs)
 
 
-class WorkingSpaceListView(BaseWorkingSpaceListView):
-    queryset = WorkingSpace.objects.all()
-    serializer_class = WorkingSpaceSerializer
-
-
-class WorkingSpaceDetailView(BaseWorkingSpaceDetailView):
-    queryset = WorkingSpace.objects.all()
-    serializer_class = WorkingSpaceSerializer
-
-
-class TypeWorkingSpaceListView(BaseWorkingSpaceListView):
+class TypeWorkingSpaceListView(ListCreateAPIView):
+    permission_classes = (IsOwnerOrAdministratorRoleOrReadOnly,)
     queryset = TypeWorkingSpace.objects.all()
     serializer_class = TypeWorkingSpaceSerializer
 
+    def create(self, request, *args, **kwargs):
+        coworking = get_object_or_404(
+            queryset=Coworking.objects.all(), pk=request.data["coworking"]
+        )
+        validate_request_to_coworking(
+            request.user, request.auth["user_role"], coworking.owner
+        )
+        return super().create(request, *args, **kwargs)
 
-class TypeWorkingSpaceDetailView(BaseWorkingSpaceDetailView):
+
+class TypeWorkingSpaceDetailView(RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsOwnerOrAdministratorRoleOrReadOnly,)
     queryset = TypeWorkingSpace.objects.all()
     serializer_class = TypeWorkingSpaceSerializer
+
+    def validate_request(self, request):
+        coworking = Coworking.objects.get(id=self.get(request).data["coworking"])
+        validate_request_to_coworking(
+            request.user, request.auth["user_role"], coworking.owner
+        )
+
+    def partial_update(self, request, *args, **kwargs):
+        self.validate_request(request)
+        return super().partial_update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        self.validate_request(request)
+        return super().destroy(request, *args, **kwargs)
