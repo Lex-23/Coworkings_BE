@@ -22,7 +22,9 @@ class CoworkingView(APIView):
 
     def patch(self, request, pk, format=None):
         coworking = self.get_object(pk)
-        validate_request_to_coworking(request, coworking.owner)
+        validate_request_to_coworking(
+            request.user, request.auth["user_role"], coworking.owner
+        )
         serializer = CoworkingSerializer(coworking, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -31,7 +33,9 @@ class CoworkingView(APIView):
 
     def delete(self, request, pk, format=None):
         coworking = self.get_object(pk)
-        validate_request_to_coworking(request, coworking.owner)
+        validate_request_to_coworking(
+            request.user, request.auth["user_role"], coworking.owner
+        )
         coworking.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
