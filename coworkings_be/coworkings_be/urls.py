@@ -10,6 +10,7 @@ urlpatterns = [
     path("api/", include("users.urls")),
     path("api/", include("coworking.urls")),
     path("api/", include("working_spaces.urls")),
+    path("api/", include("reservation.urls")),
     re_path(
         r"^swagger(?P<format>\.json|\.yaml)$",
         schema_view.without_ui(cache_timeout=0),

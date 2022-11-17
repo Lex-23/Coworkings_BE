@@ -1,6 +1,6 @@
 from coworking.models import Coworking, CoworkingPhoto
 from rest_framework import serializers
-from users.models import CustomUser
+from users.models import CustomUser, UserRoles
 
 
 class CoworkingRelatedSerializer(serializers.ModelSerializer):
@@ -17,7 +17,7 @@ class CoworkingPhotoSerializer(CoworkingRelatedSerializer):
 
 
 class CoworkingSerializer(serializers.ModelSerializer):
-    owners_queryset = CustomUser.objects.all()
+    owners_queryset = CustomUser.objects.filter(role=UserRoles.OWNER)
     owner = serializers.PrimaryKeyRelatedField(queryset=owners_queryset, required=False)
     photos = CoworkingPhotoSerializer(many=True, required=False)
 
