@@ -14,7 +14,7 @@ def validate_request_to_coworking(user, user_role, owner):
 
 
 def validate_request_to_reservation(user, reservation):
-    if reservation.user != user:
+    if reservation.user != user and user.role != UserRoles.ADMINISTRATOR:
         raise PermissionDenied(
             {"detail": "You do not have access to this reservation."}
         )

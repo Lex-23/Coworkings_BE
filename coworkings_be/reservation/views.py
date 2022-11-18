@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 from psycopg2.extras import DateTimeTZRange
 from reservation.models import Reservation
-from reservation.serializers import CreateReservationSerializer, ReservationSerializer
+from reservation.serializers import ReservationSerializer
 from rest_framework import status
 from rest_framework.generics import ListCreateAPIView, RetrieveDestroyAPIView
 from rest_framework.response import Response
@@ -9,13 +9,10 @@ from utils.validators import validate_request_to_reservation
 
 
 class ReservationListView(ListCreateAPIView):
-    queryset = Reservation.objects.all()
-
-    def get_serializer_class(self):
-        if self.request.method == "GET":
-            return ReservationSerializer
-        elif self.request.method == "POST":
-            return CreateReservationSerializer
+    queryset = Reservation.objects.select_related(
+        "working_space", "working_space__type"
+    ).all()
+    serializer_class = ReservationSerializer
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
@@ -38,8 +35,9 @@ class ReservationListView(ListCreateAPIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        serializer = ReservationSerializer(new_object)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(
+            {"id": new_object.id, **serializer.data}, status=status.HTTP_201_CREATED
+        )
 
 
 class ReservationDetailView(RetrieveDestroyAPIView):
