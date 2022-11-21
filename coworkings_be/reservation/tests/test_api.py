@@ -203,32 +203,45 @@ class ReservationCreateTestCase(TestCase):
         token = CustomTokenObtainPairSerializer.get_token(self.user)
         self.client.force_authenticate(user=self.user, token=token)
 
-        data = {
-            1: {
-                "start_time": self.start_time - datetime.timedelta(seconds=60),
-                "end_time": self.end_time - datetime.timedelta(seconds=60),
-                "working_space": self.working_space.id,
+        items = (
+            {
+                "case": "overlaps in start",
+                "data": {
+                    "start_time": self.start_time - datetime.timedelta(seconds=60),
+                    "end_time": self.end_time - datetime.timedelta(seconds=60),
+                    "working_space": self.working_space.id,
+                },
             },
-            2: {
-                "start_time": self.start_time + datetime.timedelta(seconds=60),
-                "end_time": self.end_time + datetime.timedelta(seconds=60),
-                "working_space": self.working_space.id,
+            {
+                "case": "overlaps in end",
+                "data": {
+                    "start_time": self.start_time + datetime.timedelta(seconds=60),
+                    "end_time": self.end_time + datetime.timedelta(seconds=60),
+                    "working_space": self.working_space.id,
+                },
             },
-            3: {
-                "start_time": self.start_time + datetime.timedelta(seconds=60),
-                "end_time": self.end_time - datetime.timedelta(seconds=60),
-                "working_space": self.working_space.id,
+            {
+                "case": "overlaps in middle",
+                "data": {
+                    "start_time": self.start_time + datetime.timedelta(seconds=60),
+                    "end_time": self.end_time - datetime.timedelta(seconds=60),
+                    "working_space": self.working_space.id,
+                },
             },
-            4: {
-                "start_time": self.start_time - datetime.timedelta(seconds=60),
-                "end_time": self.end_time + datetime.timedelta(seconds=60),
-                "working_space": self.working_space.id,
+            {
+                "case": "overlaps at all",
+                "data": {
+                    "start_time": self.start_time - datetime.timedelta(seconds=60),
+                    "end_time": self.end_time + datetime.timedelta(seconds=60),
+                    "working_space": self.working_space.id,
+                },
             },
-        }
+        )
 
-        for n in data.keys():
-            with transaction.atomic():
-                response = self.client.post(self.url, data=data[n])
+        for item in items:
+            with self.subTest(item["case"]), transaction.atomic():
+                response = self.client.post(self.url, data=item["data"])
+                breakpoint()
                 self.assertEqual(400, response.status_code)
                 self.assertEqual(
                     {

@@ -10,7 +10,7 @@ from working_spaces.tests.factory import WorkingSpaceFactory
 test_dates = [
     (
         datetime.datetime(2022, 11, n, 10, 00, 00),
-        datetime.datetime(2022, 11, n, 18, 00, 00),
+        datetime.datetime(2022, 11, n, 10, 00, 00) + datetime.timedelta(hours=8),
     )
     for n in range(1, 31)
 ]

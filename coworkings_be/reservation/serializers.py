@@ -30,24 +30,3 @@ class ReservationSerializer(serializers.ModelSerializer):
                 {"reservation time": "end time must be late than start time."}
             )
         return attrs
-
-
-# class ReservationSerializer(serializers.ModelSerializer):
-#     user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-#     working_space = serializers.PrimaryKeyRelatedField(
-#         queryset=WorkingSpace.objects.all()
-#     )
-#     start_time = serializers.DateTimeField()
-#     end_time = serializers.DateTimeField()
-#
-#     class Meta:
-#         model = Reservation
-#         fields = (
-#             "id",
-#             "user",
-#             "working_space",
-#             "start_time",
-#             "end_time",
-#             "total_price",
-#             "paid",
-#         )

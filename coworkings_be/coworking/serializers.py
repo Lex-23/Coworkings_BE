@@ -17,8 +17,9 @@ class CoworkingPhotoSerializer(CoworkingRelatedSerializer):
 
 
 class CoworkingSerializer(serializers.ModelSerializer):
-    owners_queryset = CustomUser.objects.filter(role=UserRoles.OWNER)
-    owner = serializers.PrimaryKeyRelatedField(queryset=owners_queryset, required=False)
+    owner = serializers.PrimaryKeyRelatedField(
+        queryset=CustomUser.objects.filter(role=UserRoles.OWNER), required=False
+    )
     photos = CoworkingPhotoSerializer(many=True, required=False)
 
     class Meta:

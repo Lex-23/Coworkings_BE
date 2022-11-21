@@ -15,7 +15,7 @@ class Reservation(AuditMixin, models.Model):
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     working_space = models.ForeignKey(WorkingSpace, on_delete=models.CASCADE)
-    datetime_range = DateTimeRangeField(default=None)
+    datetime_range = DateTimeRangeField()
     paid = models.BooleanField(default=False)
 
     class Meta:
