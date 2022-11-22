@@ -64,7 +64,7 @@ class ReservationListTestCase(TestCase):
 
         self.assertEqual(2, len(query_context))
 
-        self.coworking_list = ReservationFactory.create_batch(10)
+        self.coworking_list = ReservationFactory.create_batch(40)
         with CaptureQueriesContext(connection) as query_context:
             self.client.get(self.url)
         self.assertEqual(2, len(query_context))
@@ -241,7 +241,6 @@ class ReservationCreateTestCase(TestCase):
         for item in items:
             with self.subTest(item["case"]), transaction.atomic():
                 response = self.client.post(self.url, data=item["data"])
-                breakpoint()
                 self.assertEqual(400, response.status_code)
                 self.assertEqual(
                     {

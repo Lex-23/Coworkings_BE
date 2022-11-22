@@ -7,13 +7,7 @@ from reservation.models import Reservation
 from users.tests.factory import UserFactory
 from working_spaces.tests.factory import WorkingSpaceFactory
 
-test_dates = [
-    (
-        datetime.datetime(2022, 11, n, 10, 00, 00),
-        datetime.datetime(2022, 11, n, 10, 00, 00) + datetime.timedelta(hours=8),
-    )
-    for n in range(1, 31)
-]
+START_DATETIME = datetime.datetime(2022, 11, 1, 10, 00, 00)
 
 
 class ReservationFactory(DjangoModelFactory):
@@ -23,5 +17,12 @@ class ReservationFactory(DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     working_space = factory.SubFactory(WorkingSpaceFactory)
     datetime_range = factory.Sequence(
-        (lambda n: DateTimeTZRange(test_dates[n][0], test_dates[n][1]))
+        (
+            lambda n: DateTimeTZRange(
+                START_DATETIME + datetime.timedelta(days=n),
+                START_DATETIME
+                + datetime.timedelta(hours=8)
+                + datetime.timedelta(days=n),
+            )
+        )
     )
