@@ -10,6 +10,6 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
-    email = factory.Faker("email")
+    email = factory.Sequence(lambda n: f"user_email{n}@gmail.com")
     password = fuzzy.FuzzyText(length=8)
     role = UserRoles.OWNER
