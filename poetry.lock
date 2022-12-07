@@ -99,6 +99,17 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-cors-headers"
+version = "3.13.0"
+description = "django-cors-headers is a Django application for handling the server headers required for Cross-Origin Resource Sharing (CORS)."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+Django = ">=3.2"
+
+[[package]]
 name = "djangorestframework"
 version = "3.14.0"
 description = "Web APIs for Django, made easy."
@@ -481,7 +492,7 @@ testing = ["coverage (>=6.2)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "9bf978fed888c6bc2d2056b4f20ef0e7a02bd235a05e1808dbacb9e1454ccf23"
+content-hash = "087def9e33cc2f44c44cac6731e38b663b3a16868f1cd888e3ffa1e8f06ad54f"
 
 [metadata.files]
 asgiref = []
@@ -519,6 +530,7 @@ coreschema = [
 ]
 distlib = []
 django = []
+django-cors-headers = []
 djangorestframework = []
 djangorestframework-simplejwt = []
 drf-yasg = []
